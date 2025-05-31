@@ -16,6 +16,10 @@ typedef struct{
     int dir;//0=N;1=S;2=W;3=E;
 }Dir_coords;
 
+typedef struct{
+    Dir_coords Ship_dir;
+    int ship_len;
+}Ship_pos;
 
 
 int fire(Board_State* tgt_b_st,Coords trgt); // vrushta 0=miss; 1=hit; 2=destroyed; 3=win
