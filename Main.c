@@ -31,54 +31,54 @@ void main()
     }
 }
 
-Board_State* board_player_setup(){
-    Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
-    int placed_ships=0,avail_2l=4,avail_3l=3,avail_4l=2,avail_6l=1;
-    while(placed_ships <10){
-        int ch;
-        printf("\nOptions:\n 1.Place Ship\n 2.Remove Ship\n 3.Show Board\nChoose: ");
-        scanf("%d", &ch);
-        if(ch<1 || ch>3) printf("Invalid option!");
-        else if(ch==3) display_player_board(B_S);
-        else{
-            Ship_pos sp;
-            if(ch==2){
-                do{
-                    printf("\nEdit ship on X Y Dir Len: ");
-                    scanf("%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
-                }while(p_ship_request(sp,1,avail_2l,avail_3l,avail_4l,avail_6l));
-                if(board_verificator(B_S,sp.Ship_dir,sp.ship_len*-1)){
-                    placed_ships--;
-                    switch(sp.ship_len){
-                        case -2:avail_2l++;break;
-                        case -3:avail_3l++;break;
-                        case -4:avail_4l++;break;
-                        case -6:avail_6l++;break;
-                    }
-                    do{
-                        printf("\nPlace ship on X Y Dir: ");
-                        scanf("%d %d %c",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir);
-                    }while(p_ship_request(sp,0,avail_2l,avail_3l,avail_4l,avail_6l));    
-                }else printf("Can't find ship!");
-            }else{
-                do{
-                    printf("\nPlace ship on X Y Dir Len: ");
-                    scanf("%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
-                }while(p_ship_request(sp,0,avail_2l,avail_3l,avail_4l,avail_6l));
-            }
-            if(board_verificator(B_S,sp.Ship_dir,sp.ship_len)){   
-                placed_ships++;
-                switch(sp.ship_len){
-                    case 2:avail_2l--;break;
-                    case 3:avail_3l--;break;
-                    case 4:avail_4l--;break;
-                    case 6:avail_6l--;break;
-                }       
-            }else printf("\nInvalid ship location!");            
-        }
-    }
-    return B_S;
-}
+//Board_State* board_player_setup(){
+//    Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
+//    int placed_ships=0,avail_2l=4,avail_3l=3,avail_4l=2,avail_6l=1;
+//    while(placed_ships <10){
+//        int ch;
+//        printf("\nOptions:\n 1.Place Ship\n 2.Remove Ship\n 3.Show Board\nChoose: ");
+//        scanf("%d", &ch);
+//        if(ch<1 || ch>3) printf("Invalid option!");
+//        else if(ch==3) display_player_board(B_S);
+//        else{
+//            Ship_pos sp;
+//            if(ch==2){
+//                do{
+//                    printf("\nEdit ship on X Y Dir Len: ");
+//                    scanf("%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
+//                }while(p_ship_request(sp,1,avail_2l,avail_3l,avail_4l,avail_6l));
+//                if(board_verificator(B_S,sp.Ship_dir,sp.ship_len*-1)){
+//                    placed_ships--;
+//                    switch(sp.ship_len){
+//                        case -2:avail_2l++;break;
+//                        case -3:avail_3l++;break;
+//                        case -4:avail_4l++;break;
+//                        case -6:avail_6l++;break;
+//                    }
+//                    do{
+//                        printf("\nPlace ship on X Y Dir: ");
+//                        scanf("%d %d %c",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir);
+//                    }while(p_ship_request(sp,0,avail_2l,avail_3l,avail_4l,avail_6l));    
+//                }else printf("Can't find ship!");
+//            }else{
+//                do{
+//                    printf("\nPlace ship on X Y Dir Len: ");
+//                    scanf("%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
+//                }while(p_ship_request(sp,0,avail_2l,avail_3l,avail_4l,avail_6l));
+//            }
+//            if(board_verificator(B_S,sp.Ship_dir,sp.ship_len)){   
+//                placed_ships++;
+//                switch(sp.ship_len){
+//                    case 2:avail_2l--;break;
+//                    case 3:avail_3l--;break;
+//                    case 4:avail_4l--;break;
+//                    case 6:avail_6l--;break;
+//                }       
+//            }else printf("\nInvalid ship location!");            
+//        }
+//    }
+//    return B_S;
+//}
 
 int in_board_range(int p){
     if(p<1||p>10) return 1;

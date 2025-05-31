@@ -39,6 +39,60 @@ int fire(Board_State* tgt_b_st,Coords trgt){
     }
 }
 
-int board_verificator(Board_State* cur_b_st, Dir_coords new_boat, int len){
-    
+int b_v_check_coords(Board_State* cur_b_st,Coords loc){
+    if(loc.x<1||loc.x>10||loc.y<1||loc.y>10) return 0;
+    else return cur_b_st->board[loc.x][loc.y];
+}
+int b_v_N(Board_State* cur_b_st, Coords loc, int len,int id){
+    Coords tmp_loc;
+    for(int x=loc.x-1;x<=loc.x+1;x++){
+        tmp_loc.x=x;
+        for(int y=loc.y+len;y>=loc.y-1;y--){
+            tmp_loc.y=y;
+            if(b_v_check_coords(cur_b_st,tmp_loc)!=0)return 0;
+        }
+    }
+    for(int y=loc.y;y<loc.y+len;y++)cur_b_st->board[loc.x][y]=id;
+}
+int b_v_S(Board_State* cur_b_st, Coords loc, int len,int id){
+    Coords tmp_loc;
+    for(int x=loc.x-1;x<=loc.x+1;x++){
+        tmp_loc.x=x;
+        for(int y=loc.y+1;y>=loc.y-len;y--){
+            tmp_loc.y=y;
+            if(b_v_check_coords(cur_b_st,tmp_loc)!=0)return 0;
+        }
+    }
+    for(int y=loc.y;y>loc.y-len;y--)cur_b_st->board[loc.x][y]=id;
+}
+int b_v_W(Board_State* cur_b_st, Coords loc, int len,int id){
+    Coords tmp_loc;
+    for(int x=loc.x-len;x<=loc.x+1;x++){
+        tmp_loc.x=x;
+        for(int y=loc.y+1;y>=loc.y-1;y--){
+            tmp_loc.y=y;
+            if(b_v_check_coords(cur_b_st,tmp_loc)!=0)return 0;
+        }
+    }
+    for(int x=loc.x;x>loc.x-len;x--)cur_b_st->board[x][loc.y]=id;
+}
+int b_v_E(Board_State* cur_b_st, Coords loc, int len,int id){
+    Coords tmp_loc;
+    for(int x=loc.x-1;x<=loc.x+len;x++){
+        tmp_loc.x=x;
+        for(int y=loc.y+1;y>=loc.y-1;y--){
+            tmp_loc.y=y;
+            if(b_v_check_coords(cur_b_st,tmp_loc)!=0)return 0;
+        }
+    }
+    for(int x=loc.x;x<loc.x+len;x++)cur_b_st->board[x][loc.y]=id;
+}
+int board_verificator(Board_State* cur_b_st, Dir_coords new_boat, int len,int ship_id){
+    switch (new_boat.dir)
+    {
+        case 'N':return b_v_N(cur_b_st,new_boat.c,len,ship_id);
+        case 'S':return b_v_S(cur_b_st,new_boat.c,len,ship_id);
+        case 'W':return b_v_W(cur_b_st,new_boat.c,len,ship_id);
+        case 'E':return b_v_E(cur_b_st,new_boat.c,len,ship_id);
+    }
 }

@@ -25,7 +25,7 @@ typedef struct{
 int fire(Board_State* tgt_b_st,Coords trgt); // vrushta 0=miss; 1=hit; 2=destroyed; 3=win
 // if hit -> primer: Purvi korab -> ot id 1 stava na id 11 ako ima oshte id 1 ostava id 11 ako ne vsichki id 11 stavat id 21
 
-int board_verificator(Board_State* cur_b_st, Dir_coords new_boat, int len);//0=fail; 1=success; if len<0 maha korab
+int board_verificator(Board_State* cur_b_st, Dir_coords new_boat, int len, int ship_id);//0=fail; 1=success;
 // cur_b_st - current board state 
 
 #endif
