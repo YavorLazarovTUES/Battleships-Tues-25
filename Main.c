@@ -6,7 +6,9 @@ Board_State* board_player_setup();
 void game_loop_2p(Board_State* p1,Board_State* p2);
 void display_player_board(Board_State* B_S);
 void display_opponent_board(Board_State* B_S);
-int Ship_pos_verify(Ship_pos SP,int edit,int avail_2l,int avail_3l,int avail_4l,int avail_6l);
+int Ship_pos_verify(Ship_pos SP,int edit,int *id_avail);
+void Add_ship(Board_State* B_S,int *id_avail);
+void Edit_ship(Board_State* B_S,int *id_avail);
 
 void main()
 {
@@ -31,96 +33,135 @@ void main()
     }
 }
 
-//Board_State* board_player_setup(){
-//    Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
-//    int placed_ships=0,avail_2l=4,avail_3l=3,avail_4l=2,avail_6l=1;
-//    while(placed_ships <10){
-//        int ch;
-//        printf("\nOptions:\n 1.Place Ship\n 2.Remove Ship\n 3.Show Board\nChoose: ");
-//        scanf("%d", &ch);
-//        if(ch<1 || ch>3) printf("Invalid option!");
-//        else if(ch==3) display_player_board(B_S);
-//        else{
-//            Ship_pos sp;
-//            if(ch==2){
-//                do{
-//                    printf("\nEdit ship on X Y Dir Len: ");
-//                    scanf("%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
-//                }while(p_ship_request(sp,1,avail_2l,avail_3l,avail_4l,avail_6l));
-//                if(board_verificator(B_S,sp.Ship_dir,sp.ship_len*-1)){
-//                    placed_ships--;
-//                    switch(sp.ship_len){
-//                        case -2:avail_2l++;break;
-//                        case -3:avail_3l++;break;
-//                        case -4:avail_4l++;break;
-//                        case -6:avail_6l++;break;
-//                    }
-//                    do{
-//                        printf("\nPlace ship on X Y Dir: ");
-//                        scanf("%d %d %c",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir);
-//                    }while(p_ship_request(sp,0,avail_2l,avail_3l,avail_4l,avail_6l));    
-//                }else printf("Can't find ship!");
-//            }else{
-//                do{
-//                    printf("\nPlace ship on X Y Dir Len: ");
-//                    scanf("%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
-//                }while(p_ship_request(sp,0,avail_2l,avail_3l,avail_4l,avail_6l));
-//            }
-//            if(board_verificator(B_S,sp.Ship_dir,sp.ship_len)){   
-//                placed_ships++;
-//                switch(sp.ship_len){
-//                    case 2:avail_2l--;break;
-//                    case 3:avail_3l--;break;
-//                    case 4:avail_4l--;break;
-//                    case 6:avail_6l--;break;
-//                }       
-//            }else printf("\nInvalid ship location!");            
-//        }
-//    }
-//    return B_S;
-//}
-
-int in_board_range(int p){
-    if(p<1||p>10) return 1;
-    else 0;
+int out_of_board_range(int p){
+    return (p<0||p>9);
 }
-int is_out_of_board(Ship_pos SP){
+
+Board_State* board_player_setup(){
+    Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            B_S->board[i][j]=0;
+        }
+    }
+    int id_avail[10];//0-3 2l ;4-6 3l; 7-8 4l; 9 6l;
+    for (int i = 0; i < 10; i++) id_avail[i] = 1;
+
+    for(int placed_ships=0;placed_ships<10;){
+        if(placed_ships==0)Add_ship(B_S,id_avail),placed_ships++;
+        int ch;
+        printf("\nOptions:\n 1.Place Ship\n 2.Edit Ship\n 3.Show Board\nChoose: ");
+        scanf("%d", &ch);
+        switch (ch)
+        {
+            case 1:Add_ship(B_S,id_avail);placed_ships++;break;
+            case 2:Edit_ship(B_S,id_avail);break;
+            case 3:display_player_board(B_S);break;
+            
+            default:printf("Invalid option!");break;
+        } 
+        
+    }
+    return B_S;
+}
+void Add_ship(Board_State* B_S,int* id_avail){
+    Ship_pos sp;
+    int c;
+    do{     
+        do{
+            printf("\nPlace ship on X Y Dir Len: ");
+            scanf("%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
+            sp.Ship_dir.c.x--;
+            sp.Ship_dir.c.y--;
+            c=Ship_pos_verify(sp,0,id_avail);
+        }while(c==0);
+    }while(!board_verificator(B_S,sp.Ship_dir,sp.ship_len,c));
+    id_avail[c-1]=0;
+}
+void Edit_ship(Board_State* B_S,int *id_avail){
+    int rm_s;
+    do{
+      printf("\nID of ship to edit:");
+      scanf("%d",&rm_s);
+    }while (out_of_board_range(rm_s-1)||id_avail[rm_s-1]==1);
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            if(B_S->board[i][j]==rm_s)B_S->board[i][j]=0;
+        }
+    }
+    Ship_pos sp;
+    switch(rm_s)
+    {
+        case 1: case 2: case 3: case 4: sp.ship_len=2; break;
+        case 5: case 6: case 7: sp.ship_len=3; break;
+        case 8: case 9: sp.ship_len=4; break;
+        case 10: sp.ship_len=6; break;
+    }
+    do{     
+        do{
+            printf("\nPlace ship on X Y Dir: ");
+            scanf("%d %d %c",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir);
+            sp.Ship_dir.c.x--;
+            sp.Ship_dir.c.y--;
+        }while(!Ship_pos_verify(sp,1,id_avail));
+    }while(!board_verificator(B_S,sp.Ship_dir,sp.ship_len,rm_s));
+}
+int is_ship_out_of_board(Ship_pos SP){
     switch (SP.Ship_dir.dir)
     {
-        case 'N':SP.Ship_dir.c.y+=SP.ship_len;break;
-        case 'S':SP.Ship_dir.c.y-=SP.ship_len;break;
+        case 'N':SP.Ship_dir.c.y-=SP.ship_len;break;
+        case 'S':SP.Ship_dir.c.y+=SP.ship_len;break;
         case 'W':SP.Ship_dir.c.x-=SP.ship_len;break;
         case 'E':SP.Ship_dir.c.x+=SP.ship_len;break;
     }
-    if(in_board_range(SP.Ship_dir.c.x)&&in_board_range(SP.Ship_dir.c.y))return 0;
-    else return 1;
+    if(out_of_board_range(SP.Ship_dir.c.x)||out_of_board_range(SP.Ship_dir.c.y))return 1;
+    else return 0;
 }
-int Ship_pos_verify(Ship_pos SP,int edit,int avail_2l,int avail_3l,int avail_4l,int avail_6l){
+int Ship_pos_verify(Ship_pos SP,int edit,int *id_avail){
+    int id_out=-1;
     switch (SP.Ship_dir.dir)
     {
-        case 'N':SP.Ship_dir.dir=0;break;
-        case 'S':SP.Ship_dir.dir=1;break;
-        case 'W':SP.Ship_dir.dir=2;break;
-        case 'E':SP.Ship_dir.dir=3;break;
+        case 'N':break;
+        case 'S':break;
+        case 'W':break;
+        case 'E':break;
     
-        default:SP.Ship_dir.dir=-1;break;
+        default:SP.Ship_dir.dir=0;break;
     }
     if(!edit)switch(SP.ship_len){
-        case 2:if(avail_2l==0) SP.ship_len=-1;break;
-        case 3:if(avail_3l==0) SP.ship_len=-1;break;
-        case 4:if(avail_4l==0) SP.ship_len=-1;break;
-        case 6:if(avail_6l==0) SP.ship_len=-1;break;
-        
+        case 2:for(int i=0;i<4;i++){
+            if(id_avail[i]==1){
+                id_out=i+1;
+                break;
+            }
+        }break;
+        case 3:for(int i=4;i<7;i++){
+            if(id_avail[i]==1){
+                id_out=i+1;
+                break;
+            }
+        }break;
+        case 4:for(int i=7;i<9;i++){
+            if(id_avail[i]==1){
+                id_out=i+1;
+                break;
+            }
+        }break;
+        case 6:if(id_avail[9]==1)id_out=10;break;
         default:SP.ship_len=-1;break;
     }
-    if(in_board_range(SP.Ship_dir.c.x)|| in_board_range(SP.Ship_dir.c.y)|| SP.Ship_dir.dir==-1||SP.ship_len==-1){
+    if(out_of_board_range(SP.Ship_dir.c.x)|| out_of_board_range(SP.Ship_dir.c.y)|| SP.Ship_dir.dir==0||SP.ship_len==-1){
         printf("Bad Input Data!");
         return 0;
     }
-    if(is_out_of_board(SP)){
+    if(is_ship_out_of_board(SP)){
         printf("Ship is out of board");
         return 0;
     }
+    if(!edit)if(id_out==-1){
+        printf("No available ships of that size!");
+        return 0;
+    }else return id_out;
     return 1;
 }
 
@@ -185,7 +226,13 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
 }
 
 void display_player_board(Board_State* B_S){
-    printf("My board");
+    printf("\nMy board:\n");
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            printf(" %2d",B_S->board[j][i]);
+        }
+        printf("\n");
+    }
 }
 
 void display_opponent_board(Board_State* B_S){
