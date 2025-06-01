@@ -13,7 +13,7 @@ int check_for_destroyed(Board_State* tgt_b_st,uint8_t trgt){
             }
         }
     }
-    for(int i=0;i<=k;i++)tgt_b_st->board[ship_det[i].x][ship_det[i].y]=trgt+20;
+    for(int i=0;i<k;i++)tgt_b_st->board[ship_det[i].x][ship_det[i].y]=trgt+20;
     return 1;
 }
 int check_for_win(Board_State* tgt_b_st){
@@ -40,14 +40,14 @@ int fire(Board_State* tgt_b_st,Coords trgt){
 }
 
 int b_v_check_coords(Board_State* cur_b_st,Coords loc){
-    if(loc.x<0||loc.x>10||loc.y<0||loc.y>10) return 0;
+    if(loc.x==-1||loc.x==10||loc.y==-1||loc.y==10) return 0;
     return cur_b_st->board[loc.x][loc.y];
 }
 int b_v_N(Board_State* cur_b_st, Coords loc, int len,int id){
     Coords tmp_loc;
     for(int x=loc.x-1;x<=loc.x+1;x++){
         tmp_loc.x=x;
-        for(int y=loc.y-len;y<=loc.y-1;y++){
+        for(int y=loc.y-len;y<=loc.y+1;y++){
             tmp_loc.y=y;
             if(b_v_check_coords(cur_b_st,tmp_loc)!=0){
                 printf("Can't place ship there!");
@@ -55,7 +55,7 @@ int b_v_N(Board_State* cur_b_st, Coords loc, int len,int id){
             }
         }
     }
-    for(int y=loc.y;y<loc.y-len;y--)cur_b_st->board[loc.x][y]=id;
+    for(int y=loc.y;y>loc.y-len;y--)cur_b_st->board[loc.x][y]=id;
     return 1;
 }
 int b_v_S(Board_State* cur_b_st, Coords loc, int len,int id){

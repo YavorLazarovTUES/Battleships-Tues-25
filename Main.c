@@ -109,10 +109,10 @@ void Edit_ship(Board_State* B_S,int *id_avail){
 int is_ship_out_of_board(Ship_pos SP){
     switch (SP.Ship_dir.dir)
     {
-        case 'N':SP.Ship_dir.c.y-=SP.ship_len;break;
-        case 'S':SP.Ship_dir.c.y+=SP.ship_len;break;
-        case 'W':SP.Ship_dir.c.x-=SP.ship_len;break;
-        case 'E':SP.Ship_dir.c.x+=SP.ship_len;break;
+        case 'N':SP.Ship_dir.c.y-=SP.ship_len-1;break;
+        case 'S':SP.Ship_dir.c.y+=SP.ship_len-1;break;
+        case 'W':SP.Ship_dir.c.x-=SP.ship_len-1;break;
+        case 'E':SP.Ship_dir.c.x+=SP.ship_len-1;break;
     }
     if(out_of_board_range(SP.Ship_dir.c.x)||out_of_board_range(SP.Ship_dir.c.y))return 1;
     else return 0;
@@ -167,7 +167,7 @@ int Ship_pos_verify(Ship_pos SP,int edit,int *id_avail){
 
 void game_loop_2p(Board_State* p1,Board_State* p2){
     Board_State* boards[2]={p1,p2};
-    Coords coords[2]={{0,0},{0,0}};
+    Coords coords[2]={{-1,0},{-1,0}};
     int aim=0,target=1,temp=0;
     while(1){
         int ch=0;
@@ -176,50 +176,69 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
         if(ch==1) display_opponent_board(boards[target]);
         else if(ch==2){
             Coords c;
-            do{
-                printf("\nHow to aim:\n 1.Normal Fire\n 2.Take last coords\nChoose: ");
-                scanf("%d",&ch);
-                if(ch==1){
+            do{ 
+                if(coords[aim].x==-1){
                     printf("\nX Y: ");
                     scanf("%d %d",&c.x,&c.y);
-                    if(c.x<1||c.x>10||c.y<1||c.y>10)printf("Invalid coords!");
+                    c.x--;
+                    c.y--;
+                    if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                     else{
                         ch=fire(boards[target],c);
                         //add fire atempt to replay
                         break;
-                    }  
-                }else if(ch==2){
-                    char d;
-                    c=coords[aim];
-                    printf("\nDir: ");
-                    scanf("%c",&d);
-                    switch (d)
-                    {
-                        case 'N':c.y++;break;
-                        case 'S':c.y--;break;
-                        case 'W':c.x--;break;
-                        case 'E':c.x++;break;
-                    
-                        default:ch=-1;break;
                     }
-                    if(ch==-1)printf("Invalid direction!");
-                    else if(c.x<1||c.x>10||c.y<1||c.y>10)printf("Invalid coords!");
-                    else{
-                        ch=fire(boards[target],c);
-                        //add fire atempt to replay
-                        break;
-                    }  
-                }else printf("Invalid option!");
+                }
+                else{
+                    printf("\nHow to aim:\n 1.Normal Fire\n 2.Take last coords (%02d;%02d)\nChoose: ",coords[aim].x+1,coords[aim].y+1);
+                    scanf("%d",&ch);
+                    if(ch==1){
+                        printf("\nX Y: ");
+                        scanf("%d %d",&c.x,&c.y);
+                        c.x--;
+                        c.y--;
+                        if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
+                        else{
+                            ch=fire(boards[target],c);
+                            //add fire atempt to replay
+                            break;
+                        }  
+                    }else if(ch==2){
+                        char d;
+                        c=coords[aim];
+                        getchar();
+                        printf("\nDir: ");
+                        scanf("%c",&d);
+                        switch (d)
+                        {
+                            case 'N':c.y--;break;
+                            case 'S':c.y++;break;
+                            case 'W':c.x--;break;
+                            case 'E':c.x++;break;
+                        
+                            default:ch=-1;break;
+                        }
+                        if(ch==-1)printf("Invalid direction!");
+                        else if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
+                        else{
+                            ch=fire(boards[target],c);
+                            //add fire atempt to replay
+                            break;
+                        }  
+                    }else printf("Invalid option!");
+                }
             }while (1);
-            if(ch==0)printf("Miss!");
-            if(ch==1)printf("Hit!");
-            if(ch==2)printf("Ship Destroyed");
-            if(ch==3){printf("Game won by player %d!",aim+1);break;}
             coords[aim].x=c.x;
             coords[aim].y=c.y;
-            temp=aim;
-            aim=target;
-            target=temp;
+            if(ch==1)printf("Hit!");
+            if(ch==2)printf("Ship Destroyed!");
+            if(ch==3){printf("Game won by player %d!",aim+1);break;}
+            if(ch==0){
+                printf("Miss!");
+                temp=aim;
+                aim=target;
+                target=temp;
+            }
         }else printf("Invalid option!");
     }
     //Save and encrypt replay here
@@ -227,14 +246,45 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
 
 void display_player_board(Board_State* B_S){
     printf("\nMy board:\n");
+    printf("y x");
+    for(int i=0;i<10;i++)printf("%02d ",i+1);
+    printf("\n");
+    uint8_t val;
     for(int i=0;i<10;i++){
+        printf("%02d ",i+1);
         for(int j=0;j<10;j++){
-            printf(" %2d",B_S->board[j][i]);
+            val=B_S->board[j][i];
+            switch (val)
+            {
+            case 0: printf("~~ ");break;
+            case 1: case 2: case 3: case 4: case 5: case 6: case 7: 
+            case 8: case 9: case 10: printf("%02d ",val);
+            }
         }
         printf("\n");
     }
 }
 
 void display_opponent_board(Board_State* B_S){
-    printf("Oponent board");
+    printf("Oponent board:\n");
+    printf("y x");
+    for(int i=0;i<10;i++)printf("%02d ",i+1);
+    printf("\n");
+    uint8_t val;
+    for(int i=0;i<10;i++){
+        printf("%02d ",i+1);
+        for(int j=0;j<10;j++){
+            val=B_S->board[j][i];
+            switch (val)
+            {
+            case 11: case 12: case 13: case 14: case 15: case 16: case 17: 
+            case 18: case 19: case 20: printf("HH ",val); break;
+            case 21: case 22: case 23: case 24: case 25: case 26: case 27: 
+            case 28: case 29: case 30: printf("DD ",val); break;
+            case 32: printf("MM ");break;
+            default: printf("~~ ");break;
+            }
+        }
+        printf("\n");
+    }
 }
