@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include "Btlshp.h"
 #include <stdlib.h>
+#include <string.h>
 
 Board_State* board_player_setup();
+Board_State* board_file_setup();
 void game_loop_2p(Board_State* p1,Board_State* p2);
 void display_player_board(Board_State* B_S);
 void display_opponent_board(Board_State* B_S);
@@ -13,20 +15,29 @@ void Edit_ship(Board_State* B_S,int *id_avail);
 void main()
 {
     int player_count=0;
+    char ch;
     Board_State *player_1_board, *player_2_board;
     do{
        printf("Player count (1 or 2): "); 
        scanf("%d", &player_count);
     }while(player_count!=1&&player_count!=2);
-
+    getchar();
     printf("\nPlayer 1 board setup:");
-    //needs choice for load board file
-    player_1_board=board_player_setup();
+    do{
+        printf("\n Load file (Y/N): ");
+        scanf("%c",&ch);
+    }while(ch!='Y'&& ch!='N');
+    if(ch=='Y') player_1_board=board_file_setup();
+    else if(ch=='N') player_1_board=board_player_setup();
     
     if(player_count==2){
         printf("\nPlayer 2 board setup:");
-        //needs choice for load board file
-        player_2_board=board_player_setup();
+        do{
+            printf("\n Load file (Y/N): ");
+            scanf("%c",&ch);
+        }while(ch!='Y'&& ch!='N');
+        if(ch=='Y') player_2_board=board_file_setup();
+        else if(ch=='N') player_2_board=board_player_setup();
         game_loop_2p(player_1_board,player_2_board);
     }else{
         player_2_board = NULL;//AI
@@ -62,6 +73,39 @@ Board_State* board_player_setup(){
         } 
         
     }
+    return B_S;
+}
+Board_State* board_file_setup(){
+    Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
+    for(int i=0;i<10;i++){
+        for(int j=0;j<10;j++){
+            B_S->board[i][j]=0;
+        }
+    }
+    int id_avail[10];//0-3 2l ;4-6 3l; 7-8 4l; 9 6l;
+    for (int i = 0; i < 10; i++) id_avail[i] = 1;
+    char file_name[100];
+    getchar();
+    printf("\nGive file name: ");
+    gets(file_name);
+    Ship_pos sp;
+    int c;
+    FILE* f=fopen(file_name,"r");
+    if (f == NULL) {
+       printf("Error opening file!");
+       exit(1);
+    }
+    for (int i = 0; i < 10; i++){
+        fscanf(f,"%d %d %c %d",&sp.Ship_dir.c.x,&sp.Ship_dir.c.y,&sp.Ship_dir.dir,&sp.ship_len);
+        sp.Ship_dir.c.x--;
+        sp.Ship_dir.c.y--;
+        c=Ship_pos_verify(sp,0,id_avail);
+        if(c==0){printf("Error with file!");exit(1);}
+        if(!board_verificator(B_S,sp.Ship_dir,sp.ship_len,c)){printf("Error with file!");exit(1);}
+        id_avail[c-1]=0;
+    }
+    fclose(f);
+    display_player_board(B_S);
     return B_S;
 }
 void Add_ship(Board_State* B_S,int* id_avail){
