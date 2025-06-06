@@ -1,4 +1,5 @@
 all: Main.exe
+	.\Main.exe
 
 Btlshp.o: Btlshp.h Btlshp.c
 	gcc -c Btlshp.c -o Btlshp.o
