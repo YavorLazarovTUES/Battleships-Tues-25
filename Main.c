@@ -2,7 +2,7 @@
 #include "Btlshp.h"
 #include <stdlib.h>
 #include <string.h>
-// #include <time.h>
+#include <time.h>
 
 Board_State* board_player_setup();
 Board_State* board_file_setup();
@@ -325,31 +325,19 @@ void main()
     printf("\nPlayer 1 board setup:");
     do{
         printf("\n Load file (Y/N): ");
-        scanf("%c",&ch);
-    }while(ch!='Y'&& ch!='N');
-    if(ch=='Y') player_1_board=board_file_setup();
-    else if(ch=='N') player_1_board=board_player_setup();
-    //     ch = getchar();
-    //     while(getchar() != '\n'); // Clear any extra input
-    // }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
-    
-    // if(ch=='Y'||ch=='y') player_1_board=board_file_setup();
-    // else if(ch=='N'||ch=='n') player_1_board=board_player_setup();
+        scanf(" %c", &ch);
+    }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+    if(ch=='Y'||ch=='y') player_1_board=board_file_setup();
+    else if(ch=='N'||ch=='n') player_1_board=board_player_setup();
     
     if(player_count==2){
         printf("\nPlayer 2 board setup:");
         do{
             printf("\n Load file (Y/N): ");
-            scanf("%c",&ch);
+            scanf(" %c", &ch);
         }while(ch!='Y'&& ch!='N');
         if(ch=='Y') player_2_board=board_file_setup();
         else if(ch=='N') player_2_board=board_player_setup();
-        //     ch = getchar();
-        //     while(getchar() != '\n'); // Clear any extra input
-        // }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
-        
-        // if(ch=='Y'||ch=='y') player_2_board=board_file_setup();
-        // else if(ch=='N'||ch=='n') player_2_board=board_player_setup();
         game_loop_2p(player_1_board,player_2_board);
     }else{
         srand(time(NULL)); 
