@@ -5,7 +5,7 @@
 #include<unistd.h>
 FILE *file;
 void Write(char filename[100], uint8_t player_1_replay[10][10],uint8_t player_2_replay[10][10]){
- file = fopen("filename", "w");
+ file = fopen(filename, "w");
     if (file == NULL) {
         printf("Error opening file");
         return;
@@ -26,15 +26,17 @@ for (int i = 0; i < 10; i++) {
 fclose(file);
 }
 void Writecoords(char filename[100],int target, int x, int y){
-file = fopen(filename, "w");
+    file = fopen(filename, "a");
     if (file == NULL) {
         printf("Error opening file");
         return;
     }
+    fseek(file, 0, SEEK_END);
     fprintf(file, "%d %d %d\n", target, x, y);
+    fclose(file);
 }
 void playReplay(char filename[100]){
-    file = fopen("filename", "r");
+    file = fopen(filename, "r");
     if (file == NULL) {
         printf("Error opening file");
         return;
@@ -61,5 +63,6 @@ while(1){
     fire(&board[target], c);
     display_opponent_board(&board[target]);
 }
+fclose(file);
 }
     
