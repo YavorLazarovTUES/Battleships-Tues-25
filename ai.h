@@ -75,7 +75,7 @@ AI_State init_ai_state() {
 Coords get_ai_target(Board_State* player_board, AI_State* ai_state) {
     Coords target;
     int attempts = 0;
-    int max_attempts = 200;
+    int max_attempts = 200; 
     
     if(ai_state->state == 0) {
         do {
@@ -83,7 +83,14 @@ Coords get_ai_target(Board_State* player_board, AI_State* ai_state) {
             target.y = rand() % 10;
             attempts++;
             if (attempts > max_attempts) {
-                target.x = -1; target.y = -1;
+                ai_state->state = 0;
+                for(int i = 0; i < 10; i++) {
+                    for(int j = 0; j < 10; j++) {
+                        ai_state->moves[i][j] = 0;
+                    }
+                }
+                target.x = rand() % 10;
+                target.y = rand() % 10;
                 break;
             }
         } while(ai_state->moves[target.y][target.x] == 1); 
@@ -91,23 +98,26 @@ Coords get_ai_target(Board_State* player_board, AI_State* ai_state) {
     else if(ai_state->state == 1) {
         static int directions[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}}; // N, E, S, W
         static int dir_index = 0;
+        int start_dir = dir_index;
         do {
             target.x = ai_state->first_hit.x + directions[dir_index][0];
             target.y = ai_state->first_hit.y + directions[dir_index][1];
             attempts++;
-            if(target.x < 0 || target.x > 9 || target.y < 0 || target.y > 9 || 
-               ai_state->moves[target.y][target.x] == 1) {
-                dir_index = (dir_index + 1) % 4;
-                if(dir_index == 0) {
-                    target.x = -1; target.y = -1;
-                    break;
-                }
-            } else {
+            
+            if(target.x >= 0 && target.x <= 9 && target.y >= 0 && target.y <= 9 && 
+               ai_state->moves[target.y][target.x] == 0) {
                 break;
             }
+            
+            dir_index = (dir_index + 1) % 4;
+            if(dir_index == start_dir) {
+                ai_state->state = 0;
+                return get_ai_target(player_board, ai_state);
+            }
+            
             if (attempts > max_attempts) {
-                target.x = -1; target.y = -1;
-                break;
+                ai_state->state = 0;
+                return get_ai_target(player_board, ai_state);
             }
         } while(1);
     }
@@ -123,11 +133,11 @@ Coords get_ai_target(Board_State* player_board, AI_State* ai_state) {
         if(ai_state->reverse) {
             dx = -dx;
             dy = -dy;
-            //start from first hit
             target = ai_state->first_hit;
         }
         target.x += dx;
         target.y += dy;
+        
         if(target.x < 0 || target.x > 9 || target.y < 0 || target.y > 9 || 
            ai_state->moves[target.y][target.x] == 1) {
             if(!ai_state->reverse) {
@@ -140,9 +150,12 @@ Coords get_ai_target(Board_State* player_board, AI_State* ai_state) {
             }
         }
     }
+    
     if (target.x < 0 || target.x > 9 || target.y < 0 || target.y > 9) {
-        return target;
+        ai_state->state = 0;
+        return get_ai_target(player_board, ai_state);
     }
+    
     ai_state->moves[target.y][target.x] = 1;
     return target;
 }
@@ -282,6 +295,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
         } else {
             // ai turn
             Coords ai_target = get_ai_target(player_board, &ai_state);
+            printf("\nAI fires at (%d,%d)\n", ai_target.x + 1, ai_target.y + 1);
             int result = fire(player_board, ai_target);
             Writecoords(filename,1,ai_target.x, ai_target.y);
             update_ai_state(&ai_state, ai_target, result);
