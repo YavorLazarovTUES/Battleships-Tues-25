@@ -16,6 +16,7 @@ Board_State* generate_ai_board() {
     
     int ship_lengths[] = {2, 2, 2, 2, 3, 3, 3, 4, 4, 6};
     int ship_id = 1;
+    char ch;
     
     for(int i = 0; i < 10; i++) {
         int placed = 0;
@@ -264,7 +265,15 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                 player_last_coords.y=c.y;
                 if(ch==1)printf("Hit!");
                 if(ch==2)printf("Ship Destroyed!");
-                if(ch==3){printf("You won!");game_over=1;}
+                if(ch==3){
+                    printf("You won!");game_over=1;
+                    do{
+                    printf("\n Would you like to see a replay of the game? (Y/N): ");
+                    scanf(" %c", &ch);
+                }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+                if(ch=='Y'||ch=='y') playReplay(filename);
+                else if(ch=='N'||ch=='n') printf("Ok");
+                }
                 if(ch==0){
                     printf("Miss!");
                     player_turn=0;
@@ -293,6 +302,14 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
             else if(result == 3) {
                 printf("\nAI won!");
                 game_over = 1;
+                char ch;
+                do{
+                    printf("\n Would you like to see a replay of the game? (Y/N): ");
+                    scanf(" %c", &ch);
+                }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+                if(ch=='Y'||ch=='y') playReplay(filename);
+                else if(ch=='N'||ch=='n') printf("Ok");
+
             }
             
             printf("\nYour board after AI's move:\n");
