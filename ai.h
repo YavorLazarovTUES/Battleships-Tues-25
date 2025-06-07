@@ -1,12 +1,11 @@
 #ifndef AI_H
 #define AI_H
-
+extern char filename[];
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "replay.h"
 #include "Btlshp.h"
-
 Board_State* generate_ai_board() {
     Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
     for(int i = 0; i < 10; i++) {
@@ -17,6 +16,7 @@ Board_State* generate_ai_board() {
     
     int ship_lengths[] = {2, 2, 2, 2, 3, 3, 3, 4, 4, 6};
     int ship_id = 1;
+    char ch;
     
     for(int i = 0; i < 10; i++) {
         int placed = 0;
@@ -219,6 +219,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                         if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                         else{
                             ch=fire(ai_board,c);
+                            Writecoords(filename,0,c.x, c.y);
                             break;
                         }
                     }
@@ -232,6 +233,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                             c.y--;
                             if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                             else{
+                                Writecoords(filename,0,c.x, c.y);
                                 ch=fire(ai_board,c);
                                 break;
                             }  
@@ -252,6 +254,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                             if(ch==-1)printf("Invalid direction!");
                             else if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                             else{
+                                Writecoords(filename,0,c.x, c.y);
                                 ch=fire(ai_board,c);
                                 break;
                             }  
@@ -262,7 +265,15 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                 player_last_coords.y=c.y;
                 if(ch==1)printf("Hit!");
                 if(ch==2)printf("Ship Destroyed!");
-                if(ch==3){printf("You won!");game_over=1;}
+                if(ch==3){
+                    printf("You won!");game_over=1;
+                    do{
+                    printf("\n Would you like to see a replay of the game? (Y/N): ");
+                    scanf(" %c", &ch);
+                }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+                if(ch=='Y'||ch=='y') playReplay(filename);
+                else if(ch=='N'||ch=='n') printf("Ok");
+                }
                 if(ch==0){
                     printf("Miss!");
                     player_turn=0;
@@ -272,6 +283,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
             // ai turn
             Coords ai_target = get_ai_target(player_board, &ai_state);
             int result = fire(player_board, ai_target);
+            Writecoords(filename,1,ai_target.x, ai_target.y);
             update_ai_state(&ai_state, ai_target, result);
             
             // result
@@ -290,6 +302,14 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
             else if(result == 3) {
                 printf("\nAI won!");
                 game_over = 1;
+                char ch;
+                do{
+                    printf("\n Would you like to see a replay of the game? (Y/N): ");
+                    scanf(" %c", &ch);
+                }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+                if(ch=='Y'||ch=='y') playReplay(filename);
+                else if(ch=='N'||ch=='n') printf("Ok");
+
             }
             
             printf("\nYour board after AI's move:\n");

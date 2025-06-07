@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ai.h"
+#include "replay.h"
 
+char filename[100] = "replay_game.txt";
 Board_State* board_player_setup();
 Board_State* board_file_setup();
 void game_loop_2p(Board_State* p1,Board_State* p2);
@@ -39,11 +41,12 @@ void main()
         }while(ch!='Y'&& ch!='N');
         if(ch=='Y') player_2_board=board_file_setup();
         else if(ch=='N') player_2_board=board_player_setup();
-        
+        Write(filename,player_1_board->board,player_2_board->board);
         game_loop_2p(player_1_board,player_2_board);
     }else{
         srand(time(NULL)); 
         player_2_board = generate_ai_board();
+        Write(filename, player_1_board->board, player_2_board->board);
         game_loop_1p(player_1_board, player_2_board);
     }
 }
@@ -233,8 +236,10 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
                     c.y--;
                     if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                     else{
+                       int target_play = target;
                         ch=fire(boards[target],c);
                         //add fire atempt to replay
+                        Writecoords(filename,target,c.x, c.y);
                         break;
                     }
                 }
@@ -249,7 +254,7 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
                         if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                         else{
                             ch=fire(boards[target],c);
-                            //add fire atempt to replay
+                            Writecoords(filename,target,c.x, c.y);
                             break;
                         }  
                     }else if(ch==2){
@@ -271,7 +276,7 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
                         else if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                         else{
                             ch=fire(boards[target],c);
-                            //add fire atempt to replay
+                            Writecoords(filename,target,c.x, c.y);
                             break;
                         }  
                     }else printf("Invalid option!");
@@ -281,7 +286,15 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
             coords[aim].y=c.y;
             if(ch==1)printf("Hit!");
             if(ch==2)printf("Ship Destroyed!");
-            if(ch==3){printf("Game won by player %d!",aim+1);break;}
+            if(ch==3){
+                printf("Game won by player %d!",aim+1);break;
+                do{
+                    printf("\n Would you like to see a replay of the game? (Y/N): ");
+                    scanf(" %c", &ch);
+                }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+                if(ch=='Y'||ch=='y') playReplay(filename);
+                else if(ch=='N'||ch=='n') printf("Ok");
+            }
             if(ch==0){
                 printf("Miss!");
                 temp=aim;
