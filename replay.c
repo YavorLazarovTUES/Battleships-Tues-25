@@ -1,28 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "Btlshp.h"
-void playReplay(filename){
-//Board_State P1 = // readvam b1 maham gi
-  //  Board_State P2 = // readvam b2
+#include <stdint.h>
+#include<unistd.h>
+FILE *file;
+void Write(char filename[100], uint8_t player_1_replay[10][10],uint8_t player_2_replay[10][10]){
+ file = fopen("filename", "w");
+    if (file == NULL) {
+        printf("Error opening file");
+        return;
+    }
+for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            fprintf(file, "%d ", player_1_replay[i][j]);
+        }
+        fprintf(file, "\n");
+    }
 
-    Board_State boards[2];
-
-//    boards[0] = // readvam b1
-   // boards[1] = //readvam b2
-    // display bordovete bez hodove polvzam display player board
-    while(1){
-        //if(endoffile) break;
-        
-        //print bordove s hodove polzvam opponent board
-        // cheta target
-        // cheta c.x i c.y
-        Coords c;
-        c.x = // cheta
-        c.y = //cheta 
-        fire(boards[target], c);
-
-
-
-
-
-
+for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            fprintf(file, "%d ", player_2_replay[i][j]);
+        }
+        fprintf(file, "\n");
+    }
+fclose(file);
+}
+void Writecoords(char filename[100],int target, int x, int y){
+file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Error opening file");
+        return;
+    }
+    fprintf(file, "%d %d %d\n", target, x, y);
+}
+void playReplay(char filename[100]){
+    file = fopen("filename", "r");
+    if (file == NULL) {
+        printf("Error opening file");
+        return;
+    }
+    Board_State board[2];
+    Coords c;
+for (int i = 0; i < 10; i++){
+    for (int j = 0; j < 10; j++){
+        fscanf(file, "%d", &board[0].board[i][j]);
     }
 }
+for (int i = 0; i < 10; i++){
+    for (int j = 0; j < 10; j++){
+        fscanf(file, "%d", &board[1].board[i][j]);
+    }
+}
+display_player_board(&board[0]);
+display_player_board(&board[1]);
+while(1){
+    int target;
+    if(feof(file)) break;
+    sleep(5);
+    fscanf(file, "%d %d %d", &target, &c.x, &c.y);
+    fire(&board[target], c);
+    display_opponent_board(&board[target]);
+}
+}
+    

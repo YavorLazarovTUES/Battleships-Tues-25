@@ -1,12 +1,11 @@
 #ifndef AI_H
 #define AI_H
-
+extern char filename[];
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "replay.h"
 #include "Btlshp.h"
-
 Board_State* generate_ai_board() {
     Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
     for(int i = 0; i < 10; i++) {
@@ -219,6 +218,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                         if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                         else{
                             ch=fire(ai_board,c);
+                            Writecoords(filename,0,c.x, c.y);
                             break;
                         }
                     }
@@ -232,6 +232,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                             c.y--;
                             if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                             else{
+                                Writecoords(filename,0,c.x, c.y);
                                 ch=fire(ai_board,c);
                                 break;
                             }  
@@ -252,6 +253,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
                             if(ch==-1)printf("Invalid direction!");
                             else if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                             else{
+                                Writecoords(filename,0,c.x, c.y);
                                 ch=fire(ai_board,c);
                                 break;
                             }  
@@ -272,6 +274,7 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
             // ai turn
             Coords ai_target = get_ai_target(player_board, &ai_state);
             int result = fire(player_board, ai_target);
+            Writecoords(filename,1,ai_target.x, ai_target.y);
             update_ai_state(&ai_state, ai_target, result);
             
             // result
