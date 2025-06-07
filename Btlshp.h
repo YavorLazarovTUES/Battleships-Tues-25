@@ -28,4 +28,11 @@ int fire(Board_State* tgt_b_st,Coords trgt); // vrushta 0=miss; 1=hit; 2=destroy
 int board_verificator(Board_State* cur_b_st, Dir_coords new_boat, int len, int ship_id);//0=fail; 1=success;
 // cur_b_st - current board state 
 
+void display_player_board(Board_State* B_S);
+
+void display_opponent_board(Board_State* B_S);
+
+int is_ship_out_of_board(Ship_pos SP);
+
+int out_of_board_range(int p);
 #endif
