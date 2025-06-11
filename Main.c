@@ -263,7 +263,6 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
                     c.y--;
                     if(c.x<0||c.x>9||c.y<0||c.y>9)printf("Invalid coords!");
                     else{
-                       int target_play = target;
                         ch=fire(boards[target],c);
                         //add fire atempt to replay
                         Writecoords(filename,target,c.x, c.y);

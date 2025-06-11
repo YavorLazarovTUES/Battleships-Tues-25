@@ -299,14 +299,6 @@ void game_loop_1p(Board_State* player_board, Board_State* ai_board) {
             else if(result == 3) {
                 printf("\nAI won!");
                 game_over = 1;
-                char ch;
-                do{
-                    printf("\n Would you like to see a replay of the game? (Y/N): ");
-                    scanf(" %c", &ch);
-                }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
-                if(ch=='Y'||ch=='y') playReplay(filename);
-                else if(ch=='N'||ch=='n') printf("Ok");
-
             }
             
             printf("\nYour board after AI's move:\n");
