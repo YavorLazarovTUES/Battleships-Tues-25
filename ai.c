@@ -108,6 +108,16 @@ Coords get_ai_target(Board_State* player_board, AI_State* ai_state) {
     else if(ai_state->state == 2) {
         target = ai_state->last_hit;
         int dx = 0, dy = 0;
+        
+        int dir_dx = ai_state->last_hit.x - ai_state->first_hit.x;
+        int dir_dy = ai_state->last_hit.y - ai_state->first_hit.y;
+        
+        if(dir_dx != 0) {
+            ai_state->direction = dir_dx > 0 ? 'E' : 'W';
+        } else if(dir_dy != 0) {
+            ai_state->direction = dir_dy > 0 ? 'S' : 'N';
+        }
+        
         switch(ai_state->direction) {
             case 'N': dy = -1; break;
             case 'S': dy = 1; break;
