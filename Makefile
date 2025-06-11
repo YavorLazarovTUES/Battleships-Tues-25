@@ -1,4 +1,4 @@
-all: Main.exe
+all: Main.exe Replay_Manager.exe
 	.\Main.exe
 
 Btlshp.o: Btlshp.h Btlshp.c
@@ -15,6 +15,9 @@ SDES.o : SDES.c SDES.h
 
 Main.exe: Main.c Btlshp.o ai.o replay.o SDES.o
 	gcc Main.c Btlshp.o ai.o replay.o SDES.o -o Main.exe
+
+Replay_Manager.exe: Replay_Manager.c Btlshp.o replay.o SDES.o
+	gcc Replay_Manager.c Btlshp.o replay.o SDES.o -o Replay_Manager.exe
 
 clean:
 	del /Q *.o *.exe 2>nul

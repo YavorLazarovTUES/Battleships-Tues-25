@@ -19,4 +19,5 @@ void main()
     }while(key>1023);
     sdes_dec(filename,key);
     playReplay("decrypted.txt");
+    remove("decrypted.txt");
 }
