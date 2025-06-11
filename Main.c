@@ -68,7 +68,7 @@ void main()
             printf("\n Key for encryption of replay (<1023):");
             scanf("%hu", &key);
         }while(key>1023);
-        sdes_enc(filename,key);
+        sdes_enc(filename_new,key);
     }
     else if(ch=='N'||ch=='n'){
         remove(filename);
