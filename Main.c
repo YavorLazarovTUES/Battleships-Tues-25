@@ -4,6 +4,7 @@
 #include <string.h>
 #include "ai.h"
 #include "replay.h"
+#include "SDES.h"
 
 char filename[100] = "replay_game.txt";
 Board_State* board_player_setup();
@@ -17,6 +18,7 @@ void Edit_ship(Board_State* B_S,int *id_avail);
 
 void main()
 {
+    uint16_t key; 
     int player_count=0;
     char ch;
     Board_State *player_1_board, *player_2_board;
@@ -25,7 +27,7 @@ void main()
        scanf("%d", &player_count);
     }while(player_count!=1&&player_count!=2);
     getchar();
-    // while(getchar() != '\n');
+
     printf("\nPlayer 1 board setup:");
     do{
         printf("\n Load file (Y/N): ");
@@ -33,22 +35,47 @@ void main()
     }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
     if(ch=='Y'||ch=='y') player_1_board=board_file_setup();
     else if(ch=='N'||ch=='n') player_1_board=board_player_setup();
+
     if(player_count==2){
         printf("\nPlayer 2 board setup:");
         do{
             printf("\n Load file (Y/N): ");
             scanf(" %c", &ch);
-        }while(ch!='Y'&& ch!='N');
-        if(ch=='Y') player_2_board=board_file_setup();
-        else if(ch=='N') player_2_board=board_player_setup();
+        }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+        if(ch=='Y'||ch=='y') player_2_board=board_file_setup();
+        else if(ch=='N'||ch=='n') player_2_board=board_player_setup();
+
         Write(filename,player_1_board->board,player_2_board->board);
         game_loop_2p(player_1_board,player_2_board);
     }else{
         srand(time(NULL)); 
         player_2_board = generate_ai_board();
+
         Write(filename, player_1_board->board, player_2_board->board);
         game_loop_1p(player_1_board, player_2_board);
     }
+    do{
+        printf("\n Do you want to save the game(Y/N):");
+        scanf("% c", &ch);
+    }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
+    char filename_new[100];
+    if(ch=='Y'||ch=='y'){
+        printf("Name of file: ");
+        gets(filename_new);
+        rename(filename,filename_new);
+        do{
+            printf("\n Key for encryption of replay (<1023):");
+            scanf("%hu", &key);
+        }while(key>1023);
+        sdes_enc(filename,key);
+    }
+    else if(ch=='N'||ch=='n'){
+        remove(filename);
+    } 
+
+
+    free(player_1_board);
+    free(player_2_board);
 }
 
 
@@ -288,12 +315,6 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
             if(ch==2)printf("Ship Destroyed!");
             if(ch==3){
                 printf("Game won by player %d!",aim+1);break;
-                do{
-                    printf("\n Would you like to see a replay of the game? (Y/N): ");
-                    scanf(" %c", &ch);
-                }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
-                if(ch=='Y'||ch=='y') playReplay(filename);
-                else if(ch=='N'||ch=='n') printf("Ok");
             }
             if(ch==0){
                 printf("Miss!");
@@ -306,6 +327,5 @@ void game_loop_2p(Board_State* p1,Board_State* p2){
             }
         }else printf("Invalid option!");
     }
-    //Save and encrypt replay here
 }
 

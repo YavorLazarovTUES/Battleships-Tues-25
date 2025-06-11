@@ -39,7 +39,7 @@ Invalid configurations (e.g. overlapping ships, invalid directions, or duplicate
 - After a **hit**, the same player goes again.
 - After a **miss**, the turn switches.
 - Players may guess by:
-  - Entering absolute coordinates (e.g., `B5`)
+  - Entering absolute coordinates (e.g., `2 5`)
   - Selecting a direction relative to the last guess (up/down/left/right)
 
 ### 🎯 Tracking Progress

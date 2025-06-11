@@ -109,38 +109,79 @@ uint8_t sdes(uint8_t input, uint8_t K1, uint8_t K2, int mode) {
     return permute8(preoutput, IP_INV, 8);
 }
 
-int main() {
-    FILE *in = fopen("replay_game.txt", "r");
-    FILE *out_enc = fopen("map_encrypted.txt", "w");
-    FILE *out_dec = fopen("map_decrypted.txt", "w");
-
-    if (!in || !out_enc || !out_dec) {
-        printf("Error opening files\n");
-        return 1;
+void sdes_enc(char filename[100], uint16_t key) {
+    FILE *in = fopen(filename, "r");
+    if (!in) {
+        printf("Error opening file to encrypt\n");
+        return;
     }
 
-    uint16_t key = 0b1010000010; 
+    FILE *temp = fopen("temp.txt", "w");
+    if (!temp) {
+        printf("Error creating temporary file\n");
+        fclose(in);
+        return;
+    }
+
     uint8_t K1, K2;
     generate_keys(key, &K1, &K2);
 
     char line[1024];
-    while (fgets(line, sizeof(line), in != NULL)) {
-        char* ptr = line;
+    while (fgets(line, sizeof(line), in)) {
+        char *ptr = line;
         int value;
-        while (sscanf(ptr, "%d", &value) == 1) {
-            uint8_t plain = (uint8_t)value;
-            uint8_t encrypted = sdes(plain, K1, K2, 0);
-            uint8_t decrypted = sdes(encrypted, K1, K2, 1);
 
-            fprintf(out_enc, "%d ", encrypted);
-            fprintf(out_dec, "%d ", decrypted);
+        while (sscanf(ptr, "%d", &value) == 1) {
+            uint8_t encrypted = sdes((uint8_t)value, K1, K2, 0);
+            fprintf(temp, "%d ", encrypted);
 
             while (*ptr && *ptr != ' ' && *ptr != '\t') ptr++;
             while (*ptr == ' ' || *ptr == '\t') ptr++;
         }
-
-        fprintf(out_enc, "\n");
-        fprintf(out_dec, "\n");
+        fprintf(temp, "\n");
     }
 
+    fclose(in);
+    fclose(temp);
+
+    remove(filename);
+    rename("temp.txt", filename);
 }
+
+void sdes_dec(char filename[100], uint16_t key) {
+    FILE *in = fopen(filename, "r");
+    if (!in) {
+        printf("Error opening file to decrypt\n");
+        return;
+    }
+
+    FILE *out = fopen("decrypted.txt", "w");
+    if (!out) {
+        printf("Error opening output file\n");
+        fclose(in);
+        return;
+    }
+
+    uint8_t K1, K2;
+    generate_keys(key, &K1, &K2);
+
+    char line[1024];
+    while (fgets(line, sizeof(line), in)) {
+        char *ptr = line;
+        int value;
+
+        while (sscanf(ptr, "%d", &value) == 1) {
+            uint8_t decrypted = sdes((uint8_t)value, K1, K2, 1);
+            fprintf(out, "%d ", decrypted);
+
+            while (*ptr && *ptr != ' ' && *ptr != '\t') ptr++;
+            while (*ptr == ' ' || *ptr == '\t') ptr++;
+        }
+        fprintf(out, "\n");
+    }
+
+    fclose(in);
+    fclose(out);
+}
+
+

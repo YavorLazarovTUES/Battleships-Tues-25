@@ -33,5 +33,7 @@ void generate_keys(uint16_t key, uint8_t *K1, uint8_t *K2);
 uint8_t sbox_lookup(uint8_t input, int sbox[4][4]);
 uint8_t fk(uint8_t half, uint8_t subkey);
 uint8_t sdes(uint8_t input, uint8_t K1, uint8_t K2, int mode);
+void sdes_dec(char filename[100], uint16_t key);
+void sdes_enc(char filename[100], uint16_t key);
 
 #endif

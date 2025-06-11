@@ -46,11 +46,21 @@ void playReplay(char filename[100]){
 for (int i = 0; i < 10; i++){
     for (int j = 0; j < 10; j++){
         fscanf(file, "%d", &board[0].board[i][j]);
+        if(board[0].board[i][j]<0||board[0].board[i][j]>10){
+            fclose(file);
+            printf("Wrong key for encryption");
+            return;
+        }
     }
 }
 for (int i = 0; i < 10; i++){
     for (int j = 0; j < 10; j++){
         fscanf(file, "%d", &board[1].board[i][j]);
+        if(board[0].board[i][j]<0||board[0].board[i][j]>10){
+            fclose(file);
+            printf("Wrong key for encryption");
+            return;
+        }
     }
 }
 display_player_board(&board[0]);
