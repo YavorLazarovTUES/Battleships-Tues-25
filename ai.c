@@ -156,14 +156,14 @@ void update_ai_state(AI_State* ai_state, Coords target, int hit_result) {
             // direction
             ai_state->state = 2;
             ai_state->last_hit = target;
-            if(target.x == ai_state->first_hit.x) {
-                // vertical
-                ai_state->direction = target.y < ai_state->first_hit.y ? 'N' : 'S';
-            } else if(target.y == ai_state->first_hit.y) {
-                // horizontal 
-                ai_state->direction = target.x < ai_state->first_hit.x ? 'W' : 'E';
-            } else {
-                ai_state->state = 1;
+            
+            int dx = target.x - ai_state->first_hit.x;
+            int dy = target.y - ai_state->first_hit.y;
+            
+            if(dx != 0) {
+                ai_state->direction = dx > 0 ? 'E' : 'W';
+            } else if(dy != 0) {
+                ai_state->direction = dy > 0 ? 'S' : 'N';
             }
         }
         else if(ai_state->state == 2) {
