@@ -125,11 +125,9 @@ Coords get_ai_target(Board_State* player_board, AI_State* ai_state) {
         if(target.x < 0 || target.x > 9 || target.y < 0 || target.y > 9 || ai_state->moves[target.y][target.x] == 1) {
             if(!ai_state->reverse) {
                 ai_state->reverse = 1;
-                return get_ai_target(player_board, ai_state);
-            } else {
-                ai_state->state = 1;
-                ai_state->reverse = 0;
-                return get_ai_target(player_board, ai_state);
+                target = ai_state->first_hit;
+                target.x -= dx;
+                target.y -= dy;
             }
         }
     }

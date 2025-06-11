@@ -56,11 +56,12 @@ void main()
     }
     do{
         printf("\n Do you want to save the game(Y/N):");
-        scanf("% c", &ch);
+        scanf(" %c", &ch);
     }while(ch!='Y'&& ch!='y'&& ch!='N'&& ch!='n');
     char filename_new[100];
     if(ch=='Y'||ch=='y'){
         printf("Name of file: ");
+        getchar(); 
         gets(filename_new);
         rename(filename,filename_new);
         do{
