@@ -13,7 +13,7 @@ typedef struct{
 
 typedef struct{
     Coords c;
-    char dir;//0=N;1=S;2=W;3=E;
+    char dir;//N;S;W;E;
 }Dir_coords;
 
 typedef struct{

@@ -239,8 +239,8 @@ int Ship_pos_verify(Ship_pos SP,int edit,int *id_avail){
     if(!edit)if(id_out==-1){
         printf("No available ships of that size!");
         return 0;
-    }else return id_out;
-    return 1;
+    }
+    return id_out;
 }
 
 void game_loop_2p(Board_State* p1,Board_State* p2){
