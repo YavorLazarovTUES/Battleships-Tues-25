@@ -13,7 +13,7 @@ replay.o : replay.c replay.h
 SDES.o : SDES.c SDES.h
 	gcc -c SDES.c -o SDES.o
 
-Main.exe: Main.c Btlshp.o replay.o
+Main.exe: Main.c Btlshp.o ai.o replay.o SDES.o
 	gcc Main.c Btlshp.o ai.o replay.o SDES.o -o Main.exe
 
 clean:

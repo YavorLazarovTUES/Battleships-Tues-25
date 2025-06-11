@@ -1,4 +1,4 @@
-#include <ai.h>
+#include "ai.h"
 
 Board_State* generate_ai_board() {
     Board_State* B_S = (Board_State*)malloc(sizeof(Board_State));
@@ -46,15 +46,6 @@ Board_State* generate_ai_board() {
     
     return B_S;
 }
-
-typedef struct {
-    int state;  // 0-random 1-circling, 2- following
-    Coords first_hit;
-    Coords last_hit;
-    char direction;  // N, S, W, E
-    int reverse;     // 0-normal, 1- reverse
-    int moves[10][10]; //0-not tried, 1-tried
-} AI_State;
 
 AI_State init_ai_state() {
     AI_State state = {0, {-1, -1}, {-1, -1}, 'N', 0};

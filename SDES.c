@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "SDES.h"
 
 int P10[] = {3, 5, 2, 7, 4, 10, 1, 9, 8, 6};
 int P8[]  = {6, 3, 7, 4, 8, 5, 10, 9};
